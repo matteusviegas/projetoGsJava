@@ -1,8 +1,12 @@
 package br.com.globalsolution.agrosat.service.WeatherData;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,6 +45,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
 
     @Override
+    @Cacheable(value = "weather-datas", key = "#id")
     public WeatherData findById(Long id) {
         return weatherDataRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -49,6 +54,13 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
 
     @Override
+    @Cacheable(value = "weather-datas-by-farm", key = "#farm.farmId")
+    public List<WeatherData> findAllByFarm(Farm farm) {
+        return weatherDataRepository.findAllByFarm(farm);
+    }
+
+    @Override
+    @CacheEvict(value = "weather-datas-by-farm", key = "#farmId")
     public WeatherData newWeatherData(Long farmId) {
         Farm farm = farmService.findById(farmId);
 
@@ -58,6 +70,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                 apiKey);
 
         ForecastDTO forecast = response.list().get(0);
+
         WeatherData weatherData = WeatherData.builder()
                 .temperature(forecast.main().temp())
                 .humidity(forecast.main().humidity())
@@ -71,6 +84,10 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "weather-datas", key = "#id"),
+            @CacheEvict(value = "weather-datas-by-farm", allEntries = true)
+    })
     public void removeById(Long id) {
         findById(id);
         weatherDataRepository.deleteById(id);

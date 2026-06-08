@@ -1,5 +1,7 @@
 package br.com.globalsolution.agrosat.presentation.controllers;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import br.com.globalsolution.agrosat.domainmodel.User;
 import br.com.globalsolution.agrosat.infrastructure.config.security.JwtUserData;
 import br.com.globalsolution.agrosat.presentation.dto.request.User.CreateUserRequest;
 import br.com.globalsolution.agrosat.presentation.dto.request.User.UpdateUserRequest;
+import br.com.globalsolution.agrosat.presentation.dto.response.Farm.FarmResponse;
 import br.com.globalsolution.agrosat.presentation.dto.response.User.UserResponse;
+import br.com.globalsolution.agrosat.service.Farm.FarmService;
 import br.com.globalsolution.agrosat.service.User.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +38,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final FarmService farmService;
+
     @GetMapping("/{id}")
     @Operation(summary = "Buscar usuário por ID", description = "Retorna os dados de um usuário específico, identificado pelo seu ID.")
     public ResponseEntity<UserResponse> getById(
@@ -47,6 +54,25 @@ public class UserController {
 
         return ResponseEntity.ok(
                 UserResponse.from(userService.findById(id)));
+    }
+
+    @GetMapping("/{id}/farms")
+    @Operation(summary = "Listar fazendas do usuário", description = "Retorna todas as fazendas associadas a um usuário específico, identificado pelo seu ID.")
+    public ResponseEntity<List<FarmResponse>> getFarmsByUserId(
+            @PathVariable Long id,
+            @AuthenticationPrincipal JwtUserData authUser) {
+
+        if (!authUser.userId().equals(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não tem permissão para acessar estas fazendas.");
+        }
+
+        User user = userService.findById(id);
+        return ResponseEntity.ok(farmService.findAllByUser(user)
+                .stream()
+                .map(FarmResponse::from)
+                .toList());
     }
 
     @PostMapping

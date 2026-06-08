@@ -1,10 +1,17 @@
 package br.com.globalsolution.agrosat.service.Farm;
 
+import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.globalsolution.agrosat.domainmodel.Farm;
+import br.com.globalsolution.agrosat.domainmodel.User;
 import br.com.globalsolution.agrosat.domainmodel.repositories.FarmRepository;
 import br.com.globalsolution.agrosat.infrastructure.config.security.JwtUserData;
 import br.com.globalsolution.agrosat.service.City.CityService;
@@ -28,6 +35,7 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
+    @Cacheable(value = "farms", key = "#id")
     public Farm findById(Long id) {
         return farmRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -36,6 +44,13 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
+    @Cacheable(value = "farms-by-user", key = "#user.userId")
+    public List<Farm> findAllByUser(User user) {
+        return farmRepository.findAllByUser(user);
+    }
+
+    @Override
+    @CacheEvict(value = "farms-by-user", key = "#o.user.userId")
     public Farm create(Farm o) {
         cityService.findById(o.getCity().getCityId());
 
@@ -43,6 +58,11 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
+    @Caching(put = {
+            @CachePut(value = "farms", key = "#id")
+    }, evict = {
+            @CacheEvict(value = "farms-by-user", allEntries = true)
+    })
     public Farm updateById(Long id, Farm o) {
         Farm existing = findById(id);
 
@@ -59,6 +79,10 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "farms", key = "#id"),
+            @CacheEvict(value = "farms-by-user", allEntries = true)
+    })
     public void removeById(Long id) {
         findById(id);
         farmRepository.deleteById(id);

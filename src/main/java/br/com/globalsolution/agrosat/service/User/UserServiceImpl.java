@@ -1,5 +1,9 @@
 package br.com.globalsolution.agrosat.service.User;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Cacheable(value = "users", key = "#id")
     public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -26,6 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users-by-email", key = "#email")
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -34,6 +40,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true),
+            @CacheEvict(value = "users-by-email", allEntries = true)
+    })
     public User create(User o) {
         if (userRepository.existsByEmail(o.getEmail())) {
             throw new ResponseStatusException(
@@ -46,11 +56,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(put = {
+            @CachePut(value = "users", key = "#id"),
+            @CachePut(value = "users-by-email", key = "#result.email")
+    }, evict = {
+            @CacheEvict(value = "users-by-email", allEntries = true)
+    })
     public User updateById(Long id, String actualPassword, User o) {
         User existing = findById(id);
 
         if (!existing.getEmail().equals(o.getEmail()) &&
-                (userRepository.existsByEmail(o.getEmail()))) {
+                userRepository.existsByEmail(o.getEmail())) {
 
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -74,6 +90,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#id"),
+            @CacheEvict(value = "users-by-email", allEntries = true)
+    })
     public void removeById(Long id) {
         findById(id);
         userRepository.deleteById(id);

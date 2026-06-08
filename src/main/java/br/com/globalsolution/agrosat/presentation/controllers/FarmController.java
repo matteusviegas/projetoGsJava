@@ -1,5 +1,11 @@
 package br.com.globalsolution.agrosat.presentation.controllers;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import java.util.List;
+
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +25,11 @@ import br.com.globalsolution.agrosat.infrastructure.config.security.JwtUserData;
 import br.com.globalsolution.agrosat.presentation.dto.request.Farm.CreateFarmRequest;
 import br.com.globalsolution.agrosat.presentation.dto.request.Farm.UpdateFarmRequest;
 import br.com.globalsolution.agrosat.presentation.dto.response.Farm.FarmResponse;
+import br.com.globalsolution.agrosat.presentation.dto.response.Plantation.PlantationResponse;
+import br.com.globalsolution.agrosat.presentation.dto.response.WeatherData.WeatherDataResponse;
 import br.com.globalsolution.agrosat.service.Farm.FarmService;
+import br.com.globalsolution.agrosat.service.Plantation.PlantationService;
+import br.com.globalsolution.agrosat.service.WeatherData.WeatherDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -35,9 +45,13 @@ public class FarmController {
 
     private final FarmService farmService;
 
+    private final PlantationService plantationService;
+
+    private final WeatherDataService weatherDataService;
+
     @GetMapping("/{id}")
     @Operation(summary = "Buscar fazenda por ID", description = "Retorna os dados de uma fazenda específica, identificada pelo seu ID.")
-    public ResponseEntity<FarmResponse> getById(
+    public ResponseEntity<EntityModel<FarmResponse>> getById(
             @PathVariable Long id,
             @AuthenticationPrincipal JwtUserData authUser) {
 
@@ -47,8 +61,57 @@ public class FarmController {
                     "Você não tem permissão para acessar esta fazenda.");
         }
 
+        Farm farm = farmService.findById(id);
+
+        EntityModel<FarmResponse> model = EntityModel.of(FarmResponse.from(farm));
+
+        model.add(linkTo(methodOn(FarmController.class).getById(id, null)).withSelfRel());
+        model.add(linkTo(methodOn(FarmController.class).getPlantationsByFarmId(id, null)).withRel("plantations"));
+        model.add(linkTo(methodOn(FarmController.class).getWeatherDatasByFarmId(id, null)).withRel("weather-datas"));
+
+        return ResponseEntity.ok(model);
+    }
+
+    @GetMapping("/{id}/plantations")
+    @Operation(summary = "Listar plantações da fazenda", description = "Retorna todas as plantações associadas a uma fazenda específica, identificada pelo seu ID.")
+    public ResponseEntity<List<PlantationResponse>> getPlantationsByFarmId(
+            @PathVariable Long id,
+            @AuthenticationPrincipal JwtUserData authUser) {
+
+        if (!farmService.isOwner(id, authUser)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não tem permissão para acessar estas plantações.");
+        }
+
+        Farm farm = farmService.findById(id);
+
         return ResponseEntity.ok(
-                FarmResponse.from(farmService.findById(id)));
+                plantationService.findAllByFarm(farm)
+                        .stream()
+                        .map(PlantationResponse::from)
+                        .toList());
+    }
+
+    @GetMapping("/{id}/weather-datas")
+    @Operation(summary = "Listar dados climáticos da fazenda", description = "Retorna todos os dados climáticos associados a uma fazenda específica, identificada pelo seu ID.")
+    public ResponseEntity<List<WeatherDataResponse>> getWeatherDatasByFarmId(
+            @PathVariable Long id,
+            @AuthenticationPrincipal JwtUserData authUser) {
+
+        if (!farmService.isOwner(id, authUser)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não tem permissão para acessar estes dados climáticos.");
+        }
+
+        Farm farm = farmService.findById(id);
+
+        return ResponseEntity.ok(
+                weatherDataService.findAllByFarm(farm)
+                        .stream()
+                        .map(WeatherDataResponse::from)
+                        .toList());
     }
 
     @PostMapping

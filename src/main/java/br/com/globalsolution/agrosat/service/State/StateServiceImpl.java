@@ -2,6 +2,7 @@ package br.com.globalsolution.agrosat.service.State;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import br.com.globalsolution.agrosat.domainmodel.State;
@@ -15,6 +16,7 @@ public class StateServiceImpl implements StateService {
     private final StateRepository stateRepository;
 
     @Override
+    @Cacheable(value = "states")
     public List<State> findAll() {
         return stateRepository.findAllByOrderByNameAsc();
     }
