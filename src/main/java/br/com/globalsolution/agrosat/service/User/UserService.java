@@ -1,4 +1,4 @@
-package br.com.globalsolution.agrosat.Service.User;
+package br.com.globalsolution.agrosat.service.User;
 
 import br.com.globalsolution.agrosat.domainmodel.User;
 

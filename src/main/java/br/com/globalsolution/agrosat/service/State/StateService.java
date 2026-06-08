@@ -1,4 +1,4 @@
-package br.com.globalsolution.agrosat.Service.State;
+package br.com.globalsolution.agrosat.service.State;
 
 import java.util.List;
 

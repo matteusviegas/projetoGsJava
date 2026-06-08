@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.globalsolution.agrosat.Service.User.UserService;
 import br.com.globalsolution.agrosat.infrastructure.config.security.JwtUserData;
 import br.com.globalsolution.agrosat.presentation.dto.request.User.CreateUserRequest;
 import br.com.globalsolution.agrosat.presentation.dto.request.User.UpdateUserRequest;
 import br.com.globalsolution.agrosat.presentation.dto.response.User.UserResponse;
+import br.com.globalsolution.agrosat.service.User.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -54,9 +54,10 @@ public class UserController {
     public ResponseEntity<UserResponse> postNew(
             @Valid @RequestBody CreateUserRequest body) {
 
-        return ResponseEntity.ok(
-                UserResponse.from(
-                        userService.create(CreateUserRequest.to(body))));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(UserResponse.from(userService.create(
+                        CreateUserRequest.to(body))));
     }
 
     @PutMapping("/{id}")

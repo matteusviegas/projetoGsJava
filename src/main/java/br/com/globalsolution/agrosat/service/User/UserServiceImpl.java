@@ -1,4 +1,4 @@
-package br.com.globalsolution.agrosat.Service.User;
+package br.com.globalsolution.agrosat.service.User;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
         existing.setName(o.getName());
         existing.setEmail(o.getEmail());
-        existing.setPassword(o.getPassword());
+        existing.setPassword(passwordEncoder.encode(o.getPassword()));
         existing.setPhone(o.getPhone());
 
         return userRepository.save(existing);
