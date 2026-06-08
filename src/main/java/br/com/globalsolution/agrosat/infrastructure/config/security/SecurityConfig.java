@@ -46,6 +46,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/states").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/cities").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/crop-types").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/plantation-status").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
