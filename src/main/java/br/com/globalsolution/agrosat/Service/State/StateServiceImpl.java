@@ -1,0 +1,22 @@
+package br.com.globalsolution.agrosat.Service.State;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import br.com.globalsolution.agrosat.domainmodel.State;
+import br.com.globalsolution.agrosat.domainmodel.repositories.StateRepository;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class StateServiceImpl implements StateService {
+
+    private final StateRepository stateRepository;
+
+    @Override
+    public List<State> findAll() {
+        return stateRepository.findAllByOrderByNameAsc();
+    }
+
+}
