@@ -13,6 +13,7 @@ import java.util.Objects;
 public class CropType {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_cultura")
     private @Setter @Getter Long cropTypeId;
 

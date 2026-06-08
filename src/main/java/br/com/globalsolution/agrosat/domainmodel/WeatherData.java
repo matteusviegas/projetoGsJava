@@ -15,6 +15,7 @@ import java.util.Objects;
 public class WeatherData {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_clima")
     private @Setter @Getter Long weatherDataId;
 

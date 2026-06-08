@@ -15,6 +15,7 @@ import java.util.Objects;
 public class Sensor {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_sensor")
     private @Setter @Getter Long sensorId;
 

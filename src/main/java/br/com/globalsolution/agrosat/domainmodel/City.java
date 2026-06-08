@@ -13,6 +13,7 @@ import java.util.Objects;
 public class City {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cidade")
     private @Setter @Getter Long cityId;
 

@@ -13,6 +13,7 @@ import java.util.Objects;
 public class State {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_estado")
     private @Setter @Getter Long stateId;
 

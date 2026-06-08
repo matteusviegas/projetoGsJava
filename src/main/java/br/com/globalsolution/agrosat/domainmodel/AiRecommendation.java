@@ -14,6 +14,7 @@ import java.util.Objects;
 public class AiRecommendation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_recomendacao")
     private @Setter @Getter Long recommendationId;
 

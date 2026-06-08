@@ -15,6 +15,7 @@ import java.util.Objects;
 public class Plantation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_plantacao")
     private @Setter @Getter Long plantationId;
 

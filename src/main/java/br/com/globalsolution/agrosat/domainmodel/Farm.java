@@ -14,6 +14,7 @@ import java.util.Objects;
 public class Farm {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_propriedade")
     private @Setter @Getter Long farmId;
 

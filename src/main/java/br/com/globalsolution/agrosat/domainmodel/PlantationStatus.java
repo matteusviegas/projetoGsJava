@@ -13,6 +13,7 @@ import java.util.Objects;
 public class PlantationStatus {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_status")
     private @Setter @Getter Long statusId;
 

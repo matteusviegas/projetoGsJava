@@ -14,6 +14,7 @@ import java.util.Objects;
 public class PestDisease {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_praga")
     private @Setter @Getter Long pestDiseaseId;
 

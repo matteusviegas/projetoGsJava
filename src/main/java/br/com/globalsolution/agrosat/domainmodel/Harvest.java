@@ -15,6 +15,7 @@ import java.util.Objects;
 public class Harvest {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_produtividade")
     private @Setter @Getter Long harvestId;
 

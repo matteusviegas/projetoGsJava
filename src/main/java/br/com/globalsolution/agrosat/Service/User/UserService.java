@@ -1,0 +1,17 @@
+package br.com.globalsolution.agrosat.Service.User;
+
+import br.com.globalsolution.agrosat.domainmodel.User;
+
+public interface UserService {
+
+    User findById(Long id);
+
+    User findByEmail(String email);
+
+    User create(User o);
+
+    User updateById(Long id, String actualPassword, User o);
+
+    void removeById(Long id);
+
+}
