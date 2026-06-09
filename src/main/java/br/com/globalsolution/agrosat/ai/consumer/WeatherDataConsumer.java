@@ -29,7 +29,7 @@ public class WeatherDataConsumer {
                 .priority(1)
                 .recommendationDate(LocalDate.now())
                 .status("A")
-                .plantationId(event.plantations().getFirst().plantationId())
+                .plantationId(event.plantations().get(0).plantationId())
                 .build());
     }
 
