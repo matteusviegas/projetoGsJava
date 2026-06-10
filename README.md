@@ -26,7 +26,7 @@ Esta API é responsável por fornecer todos os recursos necessários para o gere
 
 Vídeo Pitch:
 
-https://youtube.com/
+https://youtu.be/SzybolMV8Rg?si=_euTkDvdvW_iKIW4
 
 ---
 
@@ -34,7 +34,7 @@ https://youtube.com/
 
 Vídeo de Demonstração Técnica:
 
-https://youtube.com/
+https://youtu.be/OZEM9qkhSGk?si=z16NZnRUZ3Pnr-wI
 
 ---
 
@@ -42,11 +42,11 @@ https://youtube.com/
 
 API:
 
-https://agrosat-api.azurewebsites.net
+https://agrosat-rm560169.azurewebsites.net
 
 Swagger:
 
-https://agrosat-api.azurewebsites.net/swagger-ui/index.html
+https://agrosat-rm560169.azurewebsites.net/swagger-ui/index.html
 
 ---
 
@@ -191,7 +191,7 @@ http://localhost:8080/swagger-ui/index.html
 
 ## Integrantes
 
-* Sulamita
-* Matteus Viegas
-* Lucas
-* Antonio
+* RM561089 Sulamita
+* RM561090 Matteus Viegas
+* RM560914 Lucas
+* RM560169 Antonio
